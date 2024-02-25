@@ -1,0 +1,16 @@
+{
+  "providers": [
+    {
+      "id": "p1",
+      "name": "HM Provider",
+      "schedule": []
+    }
+  ],
+  "clients": [
+    {
+      "id": "c1",
+      "name": "HM Client"
+    }
+  ],
+  "reservations": []
+}
