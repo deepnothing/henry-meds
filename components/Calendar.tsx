@@ -20,7 +20,13 @@ interface CalendarProps {
 const Calendar: React.FC<CalendarProps> = ({ providerId }) => {
   const [items, setItems] = useState<AgendaSchedule | undefined>(undefined);
   const [schedule, setSchedule] = useState<Schedule[]>([]);
-  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [selectedDay, setSelectedDay] = useState<string>(
+    formatDateToCalendar(new Date())
+  );
+
+  const onDayPress = (day: DateData) => {
+    setSelectedDay(day.dateString);
+  };
 
   const loadItems = async (day: DateData) => {
     try {
@@ -28,9 +34,8 @@ const Calendar: React.FC<CalendarProps> = ({ providerId }) => {
       setSchedule(data);
 
       const reservations = await getReservations();
-      setReservations(reservations);
 
-      // Create default items (time slots)
+      // Create default schedule items for each day
       const newItems: AgendaSchedule = {};
 
       for (let days = -15; days < 15; days++) {
@@ -53,10 +58,10 @@ const Calendar: React.FC<CalendarProps> = ({ providerId }) => {
                 height: 50,
                 day: strDate,
                 // Add matching schedule date and reservation item as metadata
-                scheduleItem: data.find(
+                scheduleItem: data?.find(
                   (i: Schedule) => i.date === strDate && i.time === timeString
                 ),
-                reservationItem: reservations.find(
+                reservationItem: reservations?.find(
                   (i: Reservation) =>
                     i.providerId === providerId &&
                     i.time === timeString &&
@@ -76,6 +81,7 @@ const Calendar: React.FC<CalendarProps> = ({ providerId }) => {
   const renderItem = (reservation: AgendaEntry) => {
     return (
       <TimeSlot
+        selectedDay={selectedDay}
         reservation={reservation}
         providerId={providerId}
         reservationItem={reservation.reservationItem}
@@ -94,20 +100,25 @@ const Calendar: React.FC<CalendarProps> = ({ providerId }) => {
     return `${item?.reservation?.day}${index}`;
   };
 
-  const today = new Date();
-
-  const scheduleObject = schedule.reduce(
+  const scheduleObject = schedule?.reduce(
     (acc, schedule) => {
       acc[schedule.date] = {
-        marked: true,
-        dotColor: "red",
+        marked: false,
+        dotColor: "purple",
+        color: schedule.date === selectedDay ? "blue" : "#90EE90",
       };
       return acc;
     },
     {
-      [formatDateToCalendar(today)]: {
+      // one for todays date
+      [formatDateToCalendar(new Date())]: {
         marked: true,
-        dotColor: "green",
+        dotColor: "red",
+      },
+      // another for selected date
+      [selectedDay]: {
+        selected: true,
+        color: "blue",
       },
     }
   );
@@ -116,9 +127,14 @@ const Calendar: React.FC<CalendarProps> = ({ providerId }) => {
     <Agenda
       items={items}
       loadItemsForMonth={loadItems}
-      selected={formatDateToCalendar(today)}
+      selected={selectedDay}
+      onDayPress={onDayPress}
+      onCalendarToggled={() => setSelectedDay(null)}
       renderItem={renderItem}
       rowHasChanged={rowHasChanged}
+      allowSelectionOutOfRange={false}
+      pastScrollRange={1}
+      futureScrollRange={6}
       showClosingKnob={true}
       markingType={"period"}
       markedDates={scheduleObject}

@@ -82,7 +82,7 @@ export const confirmTimeSlotAsClient = async (reservationId: string) => {
     const reservationsResponse = await axios.get(`${baseUrl}/reservations`);
     const reservations = reservationsResponse.data;
 
-    const reservationToUpdate = reservations.find(
+    const reservationToUpdate = reservations?.find(
       (reservation: Reservation) => reservation.id === reservationId
     );
 

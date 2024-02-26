@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  Text,
-} from "react-native";
+import { FlatList, ActivityIndicator } from "react-native";
+import { Card, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { Provider } from "../types/users";
 import { getProviderList } from "../api";
@@ -12,7 +8,7 @@ import { Feather } from "@expo/vector-icons";
 
 const ProviderListScreen: React.FC = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -34,28 +30,25 @@ const ProviderListScreen: React.FC = () => {
   ) : (
     <FlatList
       data={providers}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#fff",
-            margin: 10,
-            borderRadius: 10,
-            padding: 20,
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexDirection: "row",
-          }}
+        <Card
           onPress={() =>
+            //@ts-ignore for sake of time
             navigation.navigate("ProviderSchedule", {
               providerId: item.id,
             })
           }
+          style={{ margin: 10 }}
         >
-          <Text>{item.name}</Text>
-          <Feather name="arrow-right" size={24} />
-        </TouchableOpacity>
+          <Card.Content
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text>{item.name}</Text>
+            <Feather name="arrow-right" size={24} />
+          </Card.Content>
+        </Card>
       )}
-      keyExtractor={(item) => item.id}
     />
   );
 };

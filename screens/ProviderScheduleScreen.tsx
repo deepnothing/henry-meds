@@ -1,6 +1,7 @@
 import React from "react";
 import Calendar from "../components/Calendar";
 import { View } from "react-native";
+import Legend from "../components/Legend";
 
 interface ProviderScheduleProps {
   route: {
@@ -15,6 +16,7 @@ const ProviderScheduleScreen: React.FC<ProviderScheduleProps> = ({ route }) => {
 
   return (
     <View style={{ flex: 1 }}>
+      <Legend />
       <Calendar providerId={providerId} />
     </View>
   );

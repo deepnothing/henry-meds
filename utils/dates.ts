@@ -50,3 +50,19 @@ export const countDownToConfirm = (
 
   return () => clearInterval(interval);
 };
+
+export const isSlot24HoursAhead = (day: string, time: string) => {
+  const datetimeString = `${day} ${time}`;
+
+  const slotDateTime = moment(datetimeString, "YYYY-MM-DD h:mm A");
+
+  const currentDateTime = moment();
+
+  const hoursDifference = slotDateTime.diff(currentDateTime, "hours");
+
+  if (hoursDifference > 24) {
+    return false;
+  } else {
+    return true;
+  }
+};

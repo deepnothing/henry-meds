@@ -10,6 +10,7 @@ import {
 import {
   countDownToConfirm,
   getCalendarDateObjectFromDateString,
+  isSlot24HoursAhead,
 } from "../utils/dates";
 
 // @ts-ignore for the sake of time
@@ -20,8 +21,9 @@ const TimeSlot: React.FC<Props> = ({
   loadItems,
   setItems,
   reservationItem,
+  selectedDay,
 }) => {
-  const [timeRemaining, setTimeRemaining] = useState("");
+  const [timeRemaining, setTimeRemaining] = useState<string>("--m --s");
 
   useEffect(() => {
     reservationItem &&
@@ -30,6 +32,11 @@ const TimeSlot: React.FC<Props> = ({
   }, [reservationItem]);
 
   const { user } = useAuth();
+
+  const isClientReservationDisabled: boolean =
+    user.role === "client"
+      ? isSlot24HoursAhead(reservation.day, reservation.name)
+      : false;
 
   const refreshCalendar = () => {
     // workaround to updating the calendar UI
@@ -54,8 +61,8 @@ const TimeSlot: React.FC<Props> = ({
         });
     } else {
       if (isProviderAvailible) {
-        if (reservationItem) Alert.alert("There is already a reservation");
-        else {
+        if (reservationItem) {
+        } else {
           reserveTimeSlotAsClient(
             user.id,
             providerId,
@@ -63,31 +70,34 @@ const TimeSlot: React.FC<Props> = ({
             reservation.name
           );
           refreshCalendar();
-          Alert.alert("Reservation pending");
+          Alert.alert("Reservation submitted");
         }
       } else Alert.alert("Provider not availible");
     }
   };
 
-  const providerAvailibleMessage =
+  const providerAvailibleMessage: string =
     user.role === "provider"
       ? "Availible"
       : reservationItem
       ? null
       : "Tap to reserve";
 
-  const providerNotAvailibleMessage =
+  const providerNotAvailibleMessage: string =
     user.role === "provider"
       ? "Tap to mark availible"
       : "Provider not availible";
 
   const handleConfirm = () => {
-    !reservationItem.confirmed &&
-      confirmTimeSlotAsClient(reservationItem.id) &&
+    if (!reservationItem.confirmed) {
+      confirmTimeSlotAsClient(reservationItem.id);
       refreshCalendar();
+      Alert.alert("Reservation confirmed");
+    }
   };
   return (
     <Card
+      disabled={isClientReservationDisabled}
       onPress={handleReservation}
       style={{
         marginTop: 20,
@@ -98,19 +108,29 @@ const TimeSlot: React.FC<Props> = ({
       <Card.Content>
         <Text variant="bodyMedium">
           {reservation.name} -{" "}
-          {!isProviderAvailible
+          {isClientReservationDisabled
+            ? "Reservations must be made at least 24 hours in advance."
+            : !isProviderAvailible
             ? providerNotAvailibleMessage
             : providerAvailibleMessage}
         </Text>
         {user.role === "client" &&
         reservationItem &&
-        reservationItem.clientId === user.id ? (
-          <Chip icon="information" onPress={handleConfirm}>
+        reservationItem.clientId === user.id &&
+        reservation.scheduleItem?.date === selectedDay &&
+        !isClientReservationDisabled ? (
+          <Chip
+            icon="information"
+            onPress={handleConfirm}
+            textStyle={{ fontSize: 12 }}
+          >
             {reservationItem.confirmed
               ? "Confirmed Reservation"
               : `Tap to confirm reservation in ${timeRemaining}`}
           </Chip>
-        ) : reservationItem && reservationItem.confirmed ? (
+        ) : reservationItem &&
+          reservationItem.confirmed &&
+          reservation.scheduleItem?.date === selectedDay ? (
           <Chip icon="information">
             Reserved by client: {reservationItem.clientId}
           </Chip>

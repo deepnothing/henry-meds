@@ -2,24 +2,27 @@
 
 - **Node.js**: v18 or higher
 
-### Hardware Requirements
+### Simulator Requirements
 
-- **iOS Devices**: iOS 13.0 or higher.
-- **Android Devices**: Android 10 or higher
+(will have to run on simulator because the mock api is being served on localhost)
+
+- **iOS**: iOS 13.0 or higher.
+- **Android**: Android 10 or higher
 
 # Running the App
 
 To run the app on your local development machine, follow these steps:
 
-1. **Install Dependencies**: `yarn`
+1. **Open Simulator** Open the xcode or android studio simulator on your machine
 
-2. **Start the App + JSON Server**: `yarn start-all` to concurrently start the Expo app and the mock api
+2. **Install Dependencies**: run `yarn` in the root directory
 
-3. **Download the Expo Go app**
+3. **Start the App + JSON Server**: run `yarn start-all` to concurrently start the Expo app and the mock api
 
-- **iOS**: https://apps.apple.com/us/app/expo-go/id982107779
-- **Android**: https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en_US&gl=US
+4. **Download the Expo Go app:** Hit the `i` key to run ios or the `a` key to run android. follow the prompts to install expo go
 
-4. **Viewing the App**: use your device to scan the QR code displayed in the terminal or Expo Developer Tools in the web browser.
+5. **Viewing the app:** Following the above steps should start the app automatically within expo go. If it doesnt, copy the url in the terminal (should look something like `exp://192.168.4.38:8081`) and paste it manually into the app .
 
-⚠️ The react-native-calendar library is very slow on UI updates when refreshing the schedule
+#
+
+⚠️ The react-native-calendars library has some lag on UI updates when refreshing the schedule. please give it a second when performing actions
