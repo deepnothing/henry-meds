@@ -1,3 +1,12 @@
+# About
+
+A dual purpose scheduling App for service providers and their clients with local mock api and database. Service providers can mark availibility on a monthly schedule, and their clients can take availible time slots from the specified providers schedule. Clients have 30 minutes to confirm reservations before they are shown to the provider.
+
+<div style="display: flex; flex-direction:row;">
+  <img src="./example2.png">
+  <img src="./example1.png">
+</div>
+
 ### Software Requirements
 
 - **Node.js**: v18 or higher
